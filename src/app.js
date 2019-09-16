@@ -20,10 +20,6 @@ app.use(cors({ origin: CLIENT_ORIGIN }))
 app.use('/api/users', usersRouter)
 app.use('/api/inventory', inventoryRouter)
 
-app.get('/', (req, res) => {
-    res.send('Hello world')
-});
-
 app.use(function errorHandler(error, req, res, next) {
     let response
     if (NODE_ENV === 'production') {
