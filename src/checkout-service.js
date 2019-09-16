@@ -1,8 +1,6 @@
 const CheckoutService = {
-    getCheckOutByUser(knex, id) {
-        return knex('checkout')
-            .select('inventory_id', 'quantity')
-            .where('user_id', id)
+    getCheckOut(knex) {
+        return knex('checkout').select('*')
     },
     getCheckOutByItem(knex, id) {
         return knex('checkout')

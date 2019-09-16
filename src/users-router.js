@@ -11,11 +11,6 @@ const sanitizeUser = user => ({
     name: xss(user.name)
 })
 
-const sanitizeCheckoutUser = checkout => ({
-    inventory_id: xss(checkout.inventory_id),
-    quantity: xss(checkout.quantity),
-})
-
 const sanitizeCheckout = checkout => ({
     user_id: xss(checkout.user_id),
     inventory_id: xss(checkout.inventory_id),
@@ -67,11 +62,10 @@ usersRouter
     .route('/checkout')
     .get((req, res, next) => {
         CheckoutService.getCheckOutByUser(
-            req.app.get('db'),
-            req.query.id
+            req.app.get('db')
         )
         .then(checkout => {
-        res.json(checkout.map(sanitizeCheckoutUser))
+        res.json(checkout.map(sanitizeCheckout))
         })
         .catch(next)
     })
