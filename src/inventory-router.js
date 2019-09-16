@@ -50,10 +50,13 @@ inventoryRouter
             .catch(next)
     })
     .delete((req, res, next) => {
-        CheckoutService.removeCheckOutbyItemId(req.app.get('db'), req.body.id)
+        if (req.params.clearCheckOut) {
+            console.log('if ran')
+            CheckoutService.removeCheckOutbyItemId(req.app.get('db'), req.query.id)
             .catch(next)
+        }
 
-        InventoryService.removeInventory(req.app.get('db'), req.body.id)
+        InventoryService.removeInventory(req.app.get('db'), req.query.id)
             .then(() => {
                 res.status(204).end()
             })

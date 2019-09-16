@@ -34,8 +34,8 @@ usersRouter
         .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
-        console.log(req.body)
         const {name} = req.body
+        const newUser = {name}
 
         if (!name) {
             return res.status(400).json({
@@ -43,7 +43,7 @@ usersRouter
             })
         }
 
-        UsersService.insertUser(req.app.get('db'), name)
+        UsersService.insertUser(req.app.get('db'), newUser)
             .then(user => {
                 res
                     .status(201)
@@ -52,8 +52,11 @@ usersRouter
             .catch(next)
     })
     .delete((req, res, next) => {
-        CheckoutService.removeCheckOutByUserId(req.app.get('db'), req.body.id)
-        UsersService.removeUser(req.app.get('db'), req.body.id)
+        if (req.params.clearCheckOut) {
+            console.log('if ran')
+            CheckoutService.removeCheckOutByUserId(req.app.get('db'), req.query.id).catch(next)
+        }
+        UsersService.removeUser(req.app.get('db'), req.query.id)
             .then(() => {
                 res.status(204).end()
             })
@@ -72,7 +75,8 @@ usersRouter
         })
         .catch(next)
     })
-    .post((req, res, next) => {
+    .post(jsonParser, (req, res, next) => {
+        console.log(req.body)
         const {user_id, data} = req.body
         const dataKeys = Object.keys(data)
 
@@ -94,26 +98,30 @@ usersRouter
                 inventory_id: item,
                 quantity: data[item]
             }
+            console.log(checkout)
             CheckoutService.insertCheckOut(req.app.get('db'), checkout)
-                .then(checkoutItem => {
-                    res
-                        .status(201)
-                        .json(sanitizeCheckout(checkoutItem))
+                .then(() => {
+                    res.status(204).end()
                 })
                 .catch(next)
-            
         })
     })
 
 usersRouter
     .route('/checkin')
-    .post((req, res, next) => {
+    .patch(jsonParser, (req, res, next) => {
         const {user_id, data} = req.body
         const dataKeys = Object.keys(data)
 
-        if (user_id == null) {
+        if (!user_id) {
             return res.status(400).json({
                 error: { message: 'Missing user id in request'}
+            })
+        }
+
+        if (!data) {
+            return res.status(400).json({
+                error: { message: 'Missing data in request'}
             })
         }
 
@@ -124,19 +132,47 @@ usersRouter
         }
 
         dataKeys.forEach(item => {
-            const checkout = {
-                user_id,
-                inventory_id: item,
-                quantity: data[item]
-            }
-            CheckoutService.insertCheckOut(req.app.get('db'), checkout)
+            const inventory_id = item
+            const quantity = data[item]
+
+            CheckoutService.updateCheckOut(req.app.get('db'), user_id, inventory_id, quantity)
+                .then(() => {
+                    res.status(204).end()
+                })
+                .catch(next)
+        })
+    })
+    .delete(jsonParser, (req, res, next) => {
+        const {user_id, data} = req.body
+        const dataKeys = Object.keys(data)
+
+        if (!user_id) {
+            return res.status(400).json({
+                error: { message: 'Missing user id in request'}
+            })
+        }
+
+        if (!data) {
+            return res.status(400).json({
+                error: { message: 'Missing data in request'}
+            })
+        }
+
+        if (dataKeys.length === 0) {
+            return res.status(400).json({
+                error: { message: 'Missing check out data in request'}
+            })
+        }
+
+        dataKeys.forEach(item => {
+            const checkout = {user_id, inventory_id: item}
+            CheckoutService.removeCheckOut(req.app.get('db'), checkout)
                 .then(checkoutItem => {
                     res
                         .status(201)
                         .json(sanitizeCheckout(checkoutItem))
                 })
                 .catch(next)
-            
         })
     })
 

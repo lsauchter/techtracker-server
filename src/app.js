@@ -4,7 +4,6 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const {NODE_ENV, CLIENT_ORIGIN} = require('./config')
-const checkoutRouter = require('./checkout-router')
 const inventoryRouter = require('./inventory-router')
 const usersRouter = require('./users-router')
 
@@ -20,7 +19,6 @@ app.use(cors({ origin: CLIENT_ORIGIN }))
 
 app.use('/api/users', usersRouter)
 app.use('/api/inventory', inventoryRouter)
-app.use('/api/checkout', checkoutRouter)
 
 app.get('/', (req, res) => {
     res.send('Hello world')

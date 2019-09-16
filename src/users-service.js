@@ -3,20 +3,19 @@ const UsersService = {
         return knex('users').select('*')
     },
     insertUser(knex, name) {
-        return knex
+        return knex('users')
             .insert(name)
-            .into('users')
             .returning('*')
-            .then(rows => {
-                return rows[0]
+            .then(row => {
+                return row[0]
             })
     },
     removeUser(knex, userId) {
         return knex('users')
-        .where({
-            'id': userId
-        })
-        .delete()
+            .where({
+                'id': userId
+            })
+            .delete()
     }
 }
 
