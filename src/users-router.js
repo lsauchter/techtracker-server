@@ -61,7 +61,7 @@ usersRouter
 usersRouter
     .route('/checkout')
     .get((req, res, next) => {
-        CheckoutService.getCheckOutByUser(
+        CheckoutService.getCheckOut(
             req.app.get('db')
         )
         .then(checkout => {
