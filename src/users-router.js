@@ -76,7 +76,6 @@ usersRouter
         .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
-        console.log(req.body)
         const {user_id, data} = req.body
         const dataKeys = Object.keys(data)
 

@@ -51,7 +51,6 @@ inventoryRouter
     })
     .delete((req, res, next) => {
         if (req.params.clearCheckOut) {
-            console.log('if ran')
             CheckoutService.removeCheckOutbyItemId(req.app.get('db'), req.query.id)
             .catch(next)
         }
@@ -71,7 +70,7 @@ inventoryRouter
             req.query.id
         )
         .then(checkout => {
-        res.json(checkout.map(sanitizeCheckout))
+            res.json(checkout.map(sanitizeCheckout))
         })
         .catch(next)
     })
