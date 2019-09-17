@@ -15,10 +15,6 @@ const sanitizeItem = item => ({
     image: xss(item.image)
 })
 
-const sanitizeCheckout = checkout => ({
-    quantity: xss(checkout.sum)
-})
-
 inventoryRouter
     .route('/')
     .get((req, res, next) => {
