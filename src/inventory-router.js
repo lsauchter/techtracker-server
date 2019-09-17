@@ -10,6 +10,7 @@ const sanitizeItem = item => ({
     id: xss(item.id),
     name: xss(item.name),
     quantity: xss(item.quantity),
+    quantityAvailable: xss(item.quantityAvailable),
     category: xss(item.category),
     image: xss(item.image)
 })
@@ -24,8 +25,25 @@ inventoryRouter
         InventoryService.getInventory(
             req.app.get('db')
         )
-        .then(inventory => {
-        res.json(inventory.map(sanitizeItem))
+        .then(async inventory => {
+            const updatedInventory = []
+            for (let i = 0; i < inventory.length; i++) {
+                const item = inventory[i]
+                await CheckoutService.getCheckOutByItem(req.app.get('db'), item.id)
+                    .then(num => {
+                        const sum = num[0].sum
+                        if (sum !== null) {
+                            const numAvailable = item.quantity - sum
+                            item.quantityAvailable = numAvailable
+                            updatedInventory.push(item)
+                        }
+                        else {
+                            item.quantityAvailable = item.quantity
+                            updatedInventory.push(item)
+                        }
+                    })
+            }
+            res.json(updatedInventory.map(sanitizeItem))
         })
         .catch(next)
     })
