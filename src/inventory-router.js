@@ -26,6 +26,7 @@ inventoryRouter
             req.app.get('db')
         )
         .then(async inventory => {
+            /* calculating quantityAvailable and adding key */
             const updatedInventory = []
             for (let i = 0; i < inventory.length; i++) {
                 const item = inventory[i]
@@ -78,19 +79,6 @@ inventoryRouter
                 res.status(204).end()
             })
             .catch(next)
-    })
-
-inventoryRouter
-    .route('/checkout')
-    .get((req, res, next) => {
-        CheckoutService.getCheckOutByItem(
-            req.app.get('db'),
-            req.query.id
-        )
-        .then(checkout => {
-            res.json(checkout.map(sanitizeCheckout))
-        })
-        .catch(next)
     })
 
 module.exports = inventoryRouter
