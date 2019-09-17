@@ -27,7 +27,7 @@ const corsOptions = {
   }
 }
 
-app.use(cors())
+app.use(cors(corsOptions))
 
 app.use('/api/users', usersRouter)
 app.use('/api/inventory', inventoryRouter)
