@@ -103,70 +103,38 @@ usersRouter
 usersRouter
     .route('/checkin')
     .patch(jsonParser, (req, res, next) => {
-        const {user_id, data} = req.body
-        const dataKeys = Object.keys(data)
+        const {user_id, inventory_id, quantity} = req.body
 
-        if (!user_id) {
-            return res.status(400).json({
-                error: { message: 'Missing user id in request'}
-            })
-        }
-
-        if (!data) {
-            return res.status(400).json({
-                error: { message: 'Missing data in request'}
-            })
-        }
-
-        if (dataKeys.length === 0) {
-            return res.status(400).json({
-                error: { message: 'Missing check out data in request'}
-            })
-        }
-
-        dataKeys.forEach(item => {
-            const inventory_id = item
-            const quantity = data[item]
-
-            CheckoutService.updateCheckOut(req.app.get('db'), user_id, inventory_id, quantity)
-                .then(() => {
-                    res.status(204).end()
+        for (const [key, value] of Object.entries(req.body)) {
+            if (value == null) {
+                return res.status(400).json({
+                error: { message: `Missing ${key} in request`}
                 })
-                .catch(next)
-        })
+            }
+        }
+
+        CheckoutService.updateCheckOut(req.app.get('db'), user_id, inventory_id, quantity)
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
     })
     .delete(jsonParser, (req, res, next) => {
-        const {user_id, data} = req.body
-        const dataKeys = Object.keys(data)
+        const {user_id, inventory_id} = req.body
 
-        if (!user_id) {
-            return res.status(400).json({
-                error: { message: 'Missing user id in request'}
-            })
-        }
-
-        if (!data) {
-            return res.status(400).json({
-                error: { message: 'Missing data in request'}
-            })
-        }
-
-        if (dataKeys.length === 0) {
-            return res.status(400).json({
-                error: { message: 'Missing check out data in request'}
-            })
-        }
-
-        dataKeys.forEach(item => {
-            const checkout = {user_id, inventory_id: item}
-            CheckoutService.removeCheckOut(req.app.get('db'), checkout)
-                .then(checkoutItem => {
-                    res
-                        .status(201)
-                        .json(sanitizeCheckout(checkoutItem))
+        for (const [key, value] of Object.entries(req.body)) {
+            if (value == null) {
+                return res.status(400).json({
+                error: { message: `Missing ${key} in request`}
                 })
-                .catch(next)
-        })
+            }
+        }
+
+        CheckoutService.removeCheckOut(req.app.get('db'), user_id, inventory_id)
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
     })
 
 module.exports = usersRouter
