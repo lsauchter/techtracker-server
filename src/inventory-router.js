@@ -66,12 +66,18 @@ inventoryRouter
             })
             .catch(next)
     })
-    .delete((req, res, next) => {
-        if (req.params.clearCheckOut) {
-            CheckoutService.removeCheckOutbyItemId(req.app.get('db'), req.query.id)
+    .delete(async (req, res, next) => {
+        await CheckoutService.getCheckOutByItem(req.app.get('db'), req.query.id)
+            .then(num => {
+                console.log(num)
+                if (num[0].sum > 0) {
+                    CheckoutService.removeCheckOutbyItemId(req.app.get('db'), req.query.id)
+                    .catch(next)
+                }
+                return Promise.resolve('ok')
+            })
             .catch(next)
-        }
-
+        
         InventoryService.removeInventory(req.app.get('db'), req.query.id)
             .then(() => {
                 res.status(204).end()
