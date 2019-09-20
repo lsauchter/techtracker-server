@@ -90,10 +90,9 @@ usersRouter
                 inventory_id: item,
                 quantity: data[item]
             }
-            console.log(checkout)
             CheckoutService.insertCheckOut(req.app.get('db'), checkout)
                 .then(() => {
-                    res.status(204).end()
+                    res.status(201).end()
                 })
                 .catch(next)
         })

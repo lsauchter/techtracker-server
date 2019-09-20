@@ -22,7 +22,7 @@ const CheckoutService = {
                 'user_id': userId,
                 'inventory_id': inventoryId
             })
-            .update(quantity)
+            .update({quantity})
     },
     removeCheckOut(knex, userId, inventoryId) {
         return knex('checkout')
