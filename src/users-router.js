@@ -47,8 +47,7 @@ usersRouter
             .catch(next)
     })
     .delete((req, res, next) => {
-        if (req.params.clearCheckOut) {
-            console.log('if ran')
+        if (req.query.clearCheckOut === 'true') {
             CheckoutService.removeCheckOutByUserId(req.app.get('db'), req.query.id).catch(next)
         }
         UsersService.removeUser(req.app.get('db'), req.query.id)
