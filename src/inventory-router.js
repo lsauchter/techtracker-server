@@ -59,10 +59,10 @@ inventoryRouter
         InventoryService.insertInventory(req.app.get('db'), newItem)
             .then(item => {
                 item.quantityAvailable = item.quantity
-                
+
                 res
                     .status(201)
-                    .json(sanitizeUser(item))
+                    .json(sanitizeItem(item))
             })
             .catch(next)
     })
