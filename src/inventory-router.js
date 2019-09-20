@@ -59,7 +59,6 @@ inventoryRouter
         InventoryService.insertInventory(req.app.get('db'), newItem)
             .then(item => {
                 item.quantityAvailable = item.quantity
-
                 res
                     .status(201)
                     .json(sanitizeItem(item))
@@ -75,11 +74,12 @@ inventoryRouter
                 }
                 return Promise.resolve('ok')
             })
-            .catch(next)
-        
-        InventoryService.removeInventory(req.app.get('db'), req.query.id)
             .then(() => {
-                res.status(204).end()
+                InventoryService.removeInventory(req.app.get('db'), req.query.id)
+                .then(() => {
+                    res.status(204).end()
+                })
+                .catch(next)
             })
             .catch(next)
     })
