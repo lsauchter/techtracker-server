@@ -47,6 +47,11 @@ usersRouter
             .catch(next)
     })
     .delete((req, res, next) => {
+        if (!req.query.id) {
+            return res.status(400).json({
+                error: { message: 'Missing id in request'}
+            })
+        }
         if (req.query.clearCheckOut === 'true') {
             CheckoutService.removeCheckOutByUserId(req.app.get('db'), req.query.id).catch(next)
         }
