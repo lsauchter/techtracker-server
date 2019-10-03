@@ -7,6 +7,14 @@ const CheckoutService = {
             .sum('quantity')
             .where('inventory_id', id)
     },
+    getCheckOutByUserandItem(knex, userId, inventoryId) {
+        return knex('checkout')
+            .select('*')
+            .where({
+                'user_id': userId,
+                'inventory_id': inventoryId
+            })
+    },
     insertCheckOut(knex, checkOut) {
         return knex
             .insert(checkOut)

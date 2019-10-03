@@ -95,9 +95,23 @@ usersRouter
                 inventory_id: item,
                 quantity: data[item]
             }
-            CheckoutService.insertCheckOut(req.app.get('db'), checkout)
-                .then(() => {
-                    res.status(201).end()
+            CheckoutService.getCheckOutByUserandItem(req.app.get('db'), checkout.user_id, checkout.inventory_id)
+                .then(response => {
+                    if (Object.keys(response).length > 0) {
+                        const newQuantity = (Number(response[0].quantity) + Number(checkout.quantity))
+                        CheckoutService.updateCheckOut(req.app.get('db'), checkout.user_id, checkout.inventory_id, `${newQuantity}`)
+                        .then(() => {
+                            res.status(204).json()
+                        })
+                        .catch(next)
+                    }
+                    else {
+                        CheckoutService.insertCheckOut(req.app.get('db'), checkout)
+                            .then(() => {
+                                res.status(201).end()
+                            })
+                            .catch(next)
+                    }
                 })
                 .catch(next)
         })
